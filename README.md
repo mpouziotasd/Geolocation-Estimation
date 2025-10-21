@@ -1,6 +1,6 @@
 # **Geolocation Estimation** ![Version](https://img.shields.io/badge/Version-1.0.0-green)
 ## *Estimating Global Positioning Coordinates of Detected Objects using Computer Vision in Aerial Imagery*
-
+<img src='preds/Prediction-Result.gif'></img>
 Traditional methods to rapidly and accurately localize objects such as vehicles, pedestrians,
 or animals over large areas often rely on hardware implants like GPS chips. These approaches are
 typically costly, labor-intensive and limited to pre-selected targets. The proposed methodology
@@ -17,6 +17,7 @@ the error resulted by a non-euclidean ground for precise real-time object mappin
 objective of this study is to develop a cost-effective and efficient object mapping system that is
 expected to achieve high accuracy offering a scalable solution for applications in various domains
 with the use of UAVs, such as wildlife monitoring, search and rescue, target tracking and more.
+
 
 ## 🚁 Overview
 
