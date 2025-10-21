@@ -1,0 +1,11 @@
+opencv-python
+ultralytics
+numpy
+matplotlib
+contextily
+
+webdriver_manager
+folium
+selenium
+pyproj	
+scikit-learn
