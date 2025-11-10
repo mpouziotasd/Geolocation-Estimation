@@ -18,15 +18,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.patches import Patch
+from utils.event_handler import on_click, get_last_click
+
 
 INPUT_VID = "DJI_20240408125916_0001_W.MP4"
 INPUT_DIR = f"input/{INPUT_VID}"
 
 DET_MODEL_PATH = 'models/yolov8x-visdrone.pt'
-OVERLAY_GIS = True
-WRITE_GIS_VIDEO = True
-PLOT_LIVE = False
 
+""" Visualization Settings """
+OVERLAY_GIS = False
+WRITE_GIS_VIDEO = False
+PLOT_GIS_LIVE = False
+PLOT_VID_LIVE = True
+
+""" Event Handlers """
+cv.namedWindow("Detections")
+cv.setMouseCallback("Detections", on_click)
 
 GIS_SIZE = (960, 640)
 # GIS_SIZE = (1440, 960) # Larger GIS window
@@ -90,7 +98,7 @@ proj = Proj(proj='utm', zone=33, ellps='WGS84')
 frame_idx = 0 
 drone_path = []
 stream_data = {'lon':[], 'lat':[], 'x':[], 'y':[], 'cls':[], 'cls+': []}
-if PLOT_LIVE:
+if PLOT_GIS_LIVE:
      plt.ion()
      fig, ax = plt.subplots()
 
@@ -163,10 +171,18 @@ while source_vid.isOpened():
           gis_vid.write(cv.cvtColor(gis_img, cv.COLOR_RGBA2BGR, gis_img))
      out_vid.write(processed_frame)
      
+     if PLOT_VID_LIVE:
+          cv.imshow('Detections', processed_frame)
+          pos = get_last_click()
+          print("Last click position:", pos)
+          if cv.waitKey(1) & 0xFF == ord('q'):
+               break
+
+
      frame_idx += 1
      lon = stream_data['lon']
      lat = stream_data['lat']
-     if PLOT_LIVE:
+     if PLOT_GIS_LIVE:
           labels = [int(label) for label in stream_data['cls']]
           ax.clear()
           cmap = mpl.colormaps['viridis'].resampled(len(set(labels)))
@@ -197,7 +213,7 @@ df = pd.DataFrame(stream_data)
 df.to_csv('data/stream_data.labels', index=False, header=True)
 
 print("Done")
-if PLOT_LIVE:
+if PLOT_GIS_LIVE:
      plt.clear()
      plt.ioff()
      plt.show()
