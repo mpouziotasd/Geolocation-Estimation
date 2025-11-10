@@ -44,13 +44,7 @@ if not os.listdir('input'):
 VALIDATE_PROJECT_FILES()
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model_configs = {
-    'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]},
-    'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768]},
-    'vitl': {'encoder': 'vitl', 'features': 256, 'out_channels': [256, 512, 1024, 1024]},
-    'vitg': {'encoder': 'vitg', 'features': 384, 'out_channels': [1536, 1536, 1536, 1536]}
-}
-encoder = 'vitb'
+
 drone_info = {"M30T":
                   {"vertical_fov": 44.1,
                    "horizontal_fov": 66,
@@ -102,19 +96,22 @@ if PLOT_LIVE:
 
 lat0 = float(drone_metadata[0]['latitude'])
 lon0 = float(drone_metadata[0]['longitude'])
+drone_data = None
 while source_vid.isOpened():
      ret, frame = source_vid.read()
      if not ret:
           source_vid.release()
           break
-     drone_data = {
-          "drone_alt": float(drone_metadata[frame_idx]['rel_alt']),
-          "gimbal_pitch": float(drone_metadata[frame_idx]['gb_pitch']),
-          "gimbal_yaw": float(drone_metadata[frame_idx]['gb_yaw']),
-          "lat": float(drone_metadata[frame_idx]['latitude']),
-          "lon": float(drone_metadata[frame_idx]['longitude']),
-          'drone_info': drone_info
-     }
+     if frame_idx < len(drone_metadata):
+          # Updates drone data for the current frame if available
+          drone_data = {
+               "drone_alt": float(drone_metadata[frame_idx]['rel_alt']),
+               "gimbal_pitch": float(drone_metadata[frame_idx]['gb_pitch']),
+               "gimbal_yaw": float(drone_metadata[frame_idx]['gb_yaw']),
+               "lat": float(drone_metadata[frame_idx]['latitude']),
+               "lon": float(drone_metadata[frame_idx]['longitude']),
+               'drone_info': drone_info
+          }
 
      print(f"Processing frame {frame_idx}/{len(drone_metadata)}")
      results = model(frame, imgsz=1920, device=device, verbose=False)[0]
